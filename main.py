@@ -4,6 +4,10 @@ from datetime import date
 import os
 import time
 
+def health_save (x):
+    with open("Pet_health.json", "w") as f:
+                    json.dump(x, f)
+
 pet_happy = r'''
 (\___/)
 (=^.^=)
@@ -28,7 +32,13 @@ pet_dead = r'''
 ~~(") (")
 '''
 
-health = 100
+if os.path.exists("Pet_health.json"):
+            with open ("Pet_health.json", "r") as f:
+                health = json.load(f)
+
+else:
+    health = 100
+
 pet_said = ""
 
 while True:
@@ -109,9 +119,19 @@ Type D to see previous conversations
                 }
             )
 
+        if (len(tasks) == 0):
+            continue
+
         print("Tasks added", len(tasks))
 
-        time_limit = float(input("Enter time limit in hours: "))
+        while True:
+
+            try:
+                time_limit = float(input("Enter time limit in hours: "))
+                break
+            except ValueError:
+                print("Enter a valid number")
+
         start_time = time.time()
             
         completion = input("Enter wheather task is completed(y/n): ")
@@ -126,14 +146,17 @@ Type D to see previous conversations
 
                 print("You took too much time")
                 health = health - 10
+                health_save(health)
 
             else:
                 print("You finished all tasks in time")
                 health = health + 5
+                health_save(health)
 
         else:
             print("You didn't finish your tasks")
             health = health - 20
+            health_save(health)
 
     if (operation.lower() == "c"):
 
